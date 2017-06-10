@@ -1,21 +1,23 @@
 const config = require("../config.json");
+const fs = require("fs");
+const sqlite3 = require('sqlite3').verbose();
+const db = new sqlite3.Database('../servers.sqlite');
 
 exports.run = (bot, funcs, msg) => {
-	if (msg.author.bot) return;
-	if (!msg.content.startsWith(config.prefix)) return;
+	if (msg.author.bot || !msg.channel.type === "text") return;
 
-	let command = msg.content.split(' ')[0].slice(config.prefix.length),
-		content = msg.content.substring(config.prefix.length, msg.content.length),
-		args = content.substring(content.indexOf(" ") + 1, content.length) || "";
-	
-	try {
-		if(funcs.has(command) !== undefined && funcs.enabled(command, msg.guild)) {
-			msg.content = args || msg.content;
-			console.log(msg.author.username + " executed " + command + " in " + msg.channel.name + " in " + msg.guild.name);
-			let moduleFile = require(`../modules/${command}.js`);
-			moduleFile.main(bot, msg, args);
+	if (msg.isMentioned(bot.user)) {
+		let args = msg.content.substring(msg.content.indexOf(" ") + 1, msg.content.length).split(" "),
+			content = msg.content.substring(msg.content.indexOf(" ") + 1, msg.content.length);
+
+		if(content.toLowerCase() == "what's your prefix?") {
+			funcs.getPrefix(bot, msg, sendPrefix);
 		}
-	} catch (err) {
-		console.error(err);
+	}
+
+	funcs.getPrefix(bot, msg, funcs.handler);
+
+	function sendPrefix(bot, msg, prefix, funcs) {
+		msg.reply("my prefix for this server is `" + prefix + "`!")
 	}
 }
