@@ -1,4 +1,5 @@
 *.json
+*.sqlite
 # Logs
 logs
 *.log

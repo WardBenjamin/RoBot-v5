@@ -38,6 +38,7 @@ module.exports = {
 		.addField('Roles', roles, true)
 		.addField('Color', member.displayHexColor, true)
 		.addField('Highest Role', member.highestRole.name, true)
+		.addField('Avatar URL', '[Here](' + user.avatarURL + ')', true)
 		
 		msg.channel.send({embed:info})
 	}

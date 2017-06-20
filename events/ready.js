@@ -1,9 +1,8 @@
-const unirest = require('unirest');
 const config = require('../config.json');
 const fs = require('fs');
 
 exports.run = (bot, funcs) => {
-	funcs.sendServerCount(bot);
+	//funcs.sendServerCount(bot);
 	funcs.syncServers(bot);
 	
 	var currentTime = new Date(),
@@ -20,6 +19,6 @@ exports.run = (bot, funcs) => {
 	let games = [`with ASIANBOI`, `in the FIRST Robotics Competition server`, `in ${bot.guilds.size} servers`, `join my support server! https://discord.io/RoBot`];
 	bot.user.setGame(games[Math.round(Math.random() * (games.length - 1))] + ' | @' + bot.user.username + ' What\'s your prefix?');
 	setInterval(() => {
-		bot.user.setGame(games[Math.round(Math.random() * (games.length - 1))] + ' | ' + config.prefix + 'help');
+		bot.user.setGame(games[Math.round(Math.random() * (games.length - 1))] + ' | @' + bot.user.username + ' What\'s your prefix?');
 	}, 300000);
 }

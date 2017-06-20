@@ -6,9 +6,9 @@ const config = require("./config.json");
 
 exports.syncServers = function(bot) {
 	db.serialize(function() {
-		db.run("CREATE TABLE IF NOT EXISTS servers (id VARCHAR(25) PRIMARY KEY, name VARCHAR(100), prefix VARCHAR(10), welcomeChannel VARCHAR(25), welcomeMessagesEnabled BOOLEAN, welcomeMessage VARCHAR(200), modMessagesChannel VARCHAR(25), modMessagesEnabled BOOLEAN)");
+		db.run("CREATE TABLE IF NOT EXISTS servers (id VARCHAR(25) PRIMARY KEY, name VARCHAR(100), prefix VARCHAR(10), welcomeChannel VARCHAR(25), welcomeMessagesEnabled BOOLEAN, welcomeMessage VARCHAR(200), leaveChannel VARCHAR(25), leaveMessagesEnabled BOOLEAN, leaveMessage VARCHAR(200))");
 		bot.guilds.forEach(guild => {
-			db.run(`INSERT OR IGNORE INTO servers VALUES (${guild.id}, "${guild.name}", "${config.prefix}", ${guild.defaultChannel.id}, 0, "Welcome {user} to the server!", ${guild.defaultChannel.id}, 0);`)
+			db.run(`INSERT OR IGNORE INTO servers VALUES (${guild.id}, "${guild.name}", "${config.prefix}", ${guild.defaultChannel.id}, 0, "Welcome {user} to the server!", ${guild.defaultChannel.id}, 0, "{user} left the server :cry:")`);
 		});
 	});
 	console.log("Servers synced.")
@@ -20,7 +20,7 @@ exports.removeServer = function(guild) {
 }
 
 exports.addServer = function(guild) {
-	db.run(`INSERT INTO servers VALUES (${guild.id}, "${guild.name}", "${config.prefix}", ${guild.defaultChannel.id}, 0, "Welcome {user} to the server!", ${guild.defaultChannel.id}, 0);`)
+	db.run(`INSERT OR IGNORE INTO servers VALUES (${guild.id}, "${guild.name}", "${config.prefix}", ${guild.defaultChannel.id}, 0, "Welcome {user} to the server!", ${guild.defaultChannel.id}, 0, "{user} left the server :cry:")`);
 	console.log(guild.name + " successfully inserted into the database!");
 }
 
@@ -29,12 +29,27 @@ exports.setPrefix = function(prefix, guild) {
 	return prefix;
 }
 
+exports.setwelcomeMessageOn = function(setting) {
+	db.run("UPDATE servers SET welcomeMessagesEnabled = \"" + setting + "\" WHERE id = " + guild.id);
+	return setting;
+}
+
+exports.setWelcomeMessageText = function(text) {
+	db.run("UPDATE servers SET welcomeMessage = \"" + text + "\" WHERE id = " + guild.id);
+	return text;
+}
+
+exports.setWelcomeMessageChannel = function(channel) {
+	db.run("UPDATE servers SET welcomeMessage = \"" + channel.id + "\" WHERE id = " + guild.id);
+	return channel.id;
+}
+
 exports.getPrefix = function(bot, msg, callback) {
 	db.all("SELECT * FROM servers WHERE id = " + msg.guild.id, function(err, rows) {
 		if(err) 
 			console.log(err);
 		else 
-			callback(bot, msg, rows[0].prefix, this);
+			callback(bot, msg, rows[0].prefix);
 	});
 }
 
@@ -78,16 +93,16 @@ exports.sendServerCount = function(bot) {
 	.headers({'Authorization': config.dbotsorg, 'Content-Type': 'application/json'})
 	.send({"server_count": bot.guilds.size})
 	.end(function (response) {
-		console.log(response.body);
+		console.log(JSON.parse(response.body));
 	});
 
 	console.log("All server counts posted successfully!");
 }
 
-exports.handler = function(bot, msg, prefix, funcs) {
+exports.handler = function(bot, msg, prefix) {
 	if (msg.content.startsWith(prefix)) {
 		let args = msg.content.substring(msg.content.indexOf(" ") + 1, msg.content.length).split(" "),
-			content = msg.content.substring(msg.content.indexOf(" ") + 1, msg.content.length),
+			content = msg.content.substring(msg.content.indexOf(" ") + 1, msg.content.length) || null,
 			command = msg.content.split(" ").shift().slice(prefix.length);
 		
 		try {
@@ -98,7 +113,7 @@ exports.handler = function(bot, msg, prefix, funcs) {
 			}
 			if(found) {
 				msg.content = content;
-				console.log(msg.author.username + " executed " + command + " in " + msg.channel.name + " in " + msg.guild.name);
+				console.log(msg.author.username + " executed " + command + " in #" + msg.channel.name + " in " + msg.guild.name);
 				require(`./modules/${command}.js`).main(bot, msg, args);
 			}
 		} catch (err) {

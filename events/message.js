@@ -1,7 +1,5 @@
 const config = require("../config.json");
 const fs = require("fs");
-const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database('../servers.sqlite');
 
 exports.run = (bot, funcs, msg) => {
 	if (msg.author.bot || !msg.channel.type === "text") return;
@@ -17,7 +15,7 @@ exports.run = (bot, funcs, msg) => {
 
 	funcs.getPrefix(bot, msg, funcs.handler);
 
-	function sendPrefix(bot, msg, prefix, funcs) {
+	function sendPrefix(bot, msg, prefix) {
 		msg.reply("my prefix for this server is `" + prefix + "`!")
 	}
 }
