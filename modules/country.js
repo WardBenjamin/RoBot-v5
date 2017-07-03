@@ -15,15 +15,18 @@ module.exports = {
 			msg.content = msg.content.replace(" ", "%20")
 			unirest.get("https://restcountries.eu/rest/v2/name/" + msg.content)
 			.end(function (result) {
-				var res = JSON.parse(result.body);
+				var res = result.body;
 				if(res.status) return msg.channel.send("Country not found.");
 				for(var i = 0; i < res.length; i++) {
 					var country = new Discord.RichEmbed();
 					country.setTitle(res[i].name)
 					.setDescription('Country Information')
-					.addField('Capital', res[i].capital)
-					.addField('Population', res[i].population)
-					.addField('Demonym', res[i].demonym)
+					.addField('Capital', res[i].capital, true)
+					.addField('Population', res[i].population, true)
+					.addField('Area', res[i].area + " Square Kilometers", true)
+					.addField('Native Name', res[i].nativeName, true)
+					.addField('Alternate Names', res[i].altSpellings.join(", "), true)
+					.addField('Demonym', res[i].demonym, true)
 					.setFooter('Triggered by ' + msg.author.username, msg.author.avatarURL)
 					.setTimestamp()
 					msg.channel.send({"embed": country});

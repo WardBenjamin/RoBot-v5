@@ -93,7 +93,7 @@ exports.sendServerCount = function(bot) {
 	.headers({'Authorization': config.dbotsorg, 'Content-Type': 'application/json'})
 	.send({"server_count": bot.guilds.size})
 	.end(function (response) {
-		console.log(JSON.parse(response.body));
+		console.log(response.body);
 	});
 
 	console.log("All server counts posted successfully!");

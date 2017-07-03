@@ -11,6 +11,11 @@ exports.run = (bot, funcs, msg) => {
 		if(content.toLowerCase() == "what's your prefix?") {
 			funcs.getPrefix(bot, msg, sendPrefix);
 		}
+
+		if(content.toLowerCase() == "resetprefix" && msg.member.hasPermission("ADMINISTRATOR")) {
+			funcs.setPrefix(config.prefix, msg.guild);
+			msg.reply('I have reset this server\'s prefix to ``' + config.prefix + '``!')
+		}
 	}
 
 	funcs.getPrefix(bot, msg, funcs.handler);
