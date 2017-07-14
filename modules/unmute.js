@@ -1,9 +1,10 @@
 module.exports = {
 	name: 'mute',
+	type: 'moderation',
 	usage: 'unmute <user>',
 	permission: 3,
 	help: 'Unmutes a specified user.',
-	main: function(bot, msg, args) {
+	main: function(bot, msg) {
 		const Discord = require("discord.js");
 		var mutee = msg.mentions.users.array();
 		if (msg.member.hasPermission('KICK_MEMBERS') || msg.member.hasPermission('ADMINISTRATOR')) {
@@ -28,7 +29,7 @@ module.exports = {
 					.setFooter(`${guild.name}`, `${guild.iconURL}`)
 					.setTimestamp()
 				try {
-					var log = msg.guild.channels.find('name', 'mod-logs');
+					var log = msg.guild.channels.find('name', 'mod-logs') || msg.guild.channels.find('name', 'modlogs');
 					log.send({embed: mute});
 				} catch (e) {
 					msg.channel.send({embed: mute});

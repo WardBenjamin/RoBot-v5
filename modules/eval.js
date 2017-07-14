@@ -1,14 +1,15 @@
 module.exports = {
 	name: 'eval',
+	type: 'owner',
 	usage: 'eval <code>',
 	permission: 6,
 	help: 'Allows bot administrators to evaluate code to test the bot.',
-	main: function(bot, msg, args) {
+	main: function(bot, msg) {
 		var Discord = require('discord.js');
 		const util = require('util');
 		
-		if (msg.author.id === "171319044715053057") {
-			var code = args;
+		if (msg.author.id === require("../config.json").owner) {
+			var code = msg.content;
 			var embed = new Discord.RichEmbed();
 			try {
 				let evaled = eval(code);

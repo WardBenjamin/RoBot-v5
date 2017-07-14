@@ -1,12 +1,12 @@
-const Discord = require("discord.js");
-
+//Work on perms checks
 module.exports = {
 	name: 'prune',
+	type: 'moderation',
 	usage: 'prune <amount>',
 	permission: 2,
 	help: 'Prunes messages from the channel.',
-	main: function(bot, msg, args) {
-		if (msg.member.hasPermission('MANAGE_MESSAGES') || msg.author.id === "171319044715053057") {
+	main: function(bot, msg) {
+		if (msg.member.hasPermission('MANAGE_MESSAGES') || msg.author.id === require("../config.json").owner) {
 			var num = msg.content;
 			if (!isNaN(num)) {
 				msg.channel.fetchMessages({limit: num})

@@ -1,13 +1,15 @@
+//Work on permission checks in this command 
 module.exports = {
 	name: 'kick',
+	type: 'moderation', 
 	usage: 'kick <usermention> <reason>',
 	permission: 3,
 	help: 'Kicks a specified user.',
-	main: function(bot, msg, args) {
+	main: function(bot, msg) {
 		const Discord = require("discord.js");
 		var banee = msg.mentions.users.array()[0];
 
-		if (msg.member.hasPermission('KICK_MEMBERS') === true || msg.member.hasPermission('ADMINISTRATOR') === true) {
+		if (msg.member.hasPermission('KICK_MEMBERS') || msg.member.hasPermission('ADMINISTRATOR')) {
 			try {
 				var kicked = msg.guild.members.get(banee.id);
 				var user = bot.users.get(banee.id);

@@ -1,9 +1,10 @@
 module.exports = {
 	name: 'vote',
+    type: 'utility',
 	usage: 'vote <question>',
 	permission: 1,
 	help: 'Creates a poll with two responses, yes or no.',
-	main: function(bot, msg, args) {
+	main: function(bot, msg) {
         var yes = 0,
             no = 0,
             t = 60,

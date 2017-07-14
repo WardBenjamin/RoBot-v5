@@ -1,9 +1,10 @@
 module.exports = {
 	name: 'timesince',
+	type: 'utility',
 	usage: 'timesince <time>',
 	permission: 1,
 	help: 'Provides the time since a specified time.',
-	main: function(bot, msg, args) {
+	main: function(bot, msg) {
 		try{
 			var d1 = new Date(msg.content);
 			var d2 = new Date();

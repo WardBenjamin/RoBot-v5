@@ -4,10 +4,11 @@ let req = new TBA('FRCDiscord', 'Discord Bot', 1.0);
 
 module.exports = {
 	name: 'tba',
+	type: 'utility',
 	usage: 'tba <arguments>',
 	permission: 1,
 	help: 'Querys The Blue Alliance API for information.',
-	main: function(bot, m, args) {
+	main: function(bot, m) {
 		var curYear = new Date().getFullYear();
 		var args = m.content.split(" ")[0];
 		var teamNumber = m.content.split(" ")[1];

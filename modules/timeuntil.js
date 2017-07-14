@@ -1,9 +1,10 @@
 module.exports = {
 	name: 'timeuntil',
+	type: 'utility',
 	usage: 'timeuntil <time>',
 	permission: 1,
 	help: 'Provides the time until a specified date.',
-	main: function(bot, msg, args) {
+	main: function(bot, msg) {
 		try {
 			var d1 = new Date(msg.content);
 			var d2 = new Date();

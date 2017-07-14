@@ -1,124 +1,271 @@
 const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database('servers.sqlite');
+const db = new sqlite3.Database('./data/servers.sqlite');
 const fs = require("fs");
 const unirest = require("unirest");
-const config = require("./config.json");
+var afkJson = fs.readFileSync("./afk.json"),
+	afk = JSON.parse(afkJson);
 
-exports.syncServers = function(bot) {
-	db.serialize(function() {
-		db.run("CREATE TABLE IF NOT EXISTS servers (id VARCHAR(25) PRIMARY KEY, name VARCHAR(100), prefix VARCHAR(10), welcomeChannel VARCHAR(25), welcomeMessagesEnabled BOOLEAN, welcomeMessage VARCHAR(200), leaveChannel VARCHAR(25), leaveMessagesEnabled BOOLEAN, leaveMessage VARCHAR(200))");
-		bot.guilds.forEach(guild => {
-			db.run(`INSERT OR IGNORE INTO servers VALUES (${guild.id}, "${guild.name}", "${config.prefix}", ${guild.defaultChannel.id}, 0, "Welcome {user} to the server!", ${guild.defaultChannel.id}, 0, "{user} left the server :cry:")`);
+module.exports = (bot) => {
+	bot.sendServerCount = function () {
+		unirest.post("https://bots.discordlist.net/api")
+			.send({ "token": config.dlist, "servers": bot.guilds.size })
+			.end(function (response) {
+				bot.log(response.body);
+			});
+
+		unirest.post("https://bots.discord.pw/api/bots/" + bot.user.id + "/stats")
+			.headers({ 'Authorization': config.dbotspw, 'Content-Type': 'application/json' })
+			.send({ "server_count": bot.guilds.size })
+			.end(function (response) {
+				bot.log(response.body);
+			});
+
+		unirest.post("https://discordbots.org/api/bots/" + bot.user.id + "/stats")
+			.headers({ 'Authorization': config.dbotsorg, 'Content-Type': 'application/json' })
+			.send({ "server_count": bot.guilds.size })
+			.end(function (response) {
+				bot.log(response.body);
+			});
+
+		bot.log("All server counts posted successfully!");
+	}
+
+	bot.syncServers = function () {
+		db.serialize(function () {
+			db.run(`CREATE TABLE IF NOT EXISTS servers (
+				id VARCHAR(25) PRIMARY KEY, 
+				name VARCHAR(100), 
+				prefix VARCHAR(10), 
+				announcementChannel VARCHAR(25), 
+				welcomeMessagesEnabled BOOLEAN, 
+				welcomeMessage VARCHAR(200), 
+				leaveMessagesEnabled BOOLEAN, 
+				leaveMessage VARCHAR(200), 
+				joinRole VARCHAR(20), 
+				joinBotRole VARCHAR(20), 
+				noInviteLinks BOOLEAN)`
+			);
+			bot.guilds.forEach(guild => {
+				db.run(`INSERT OR IGNORE INTO servers VALUES (
+					"${guild.id}", 
+					"${guild.name}", 
+					"${bot.config.prefix}", 
+					${guild.defaultChannel.id}, 
+					0, 
+					"Welcome {user} to the server!", 
+					0, 
+					"{user} left the server :cry:", 
+					"none", 
+					"none", 
+					0)`
+				);
+			});
 		});
-	});
-	console.log("Servers synced.")
-}
+		bot.log("Servers synced.")
+	}
 
-exports.removeServer = function(guild) {
-	db.run(`DELETE FROM servers WHERE id = ${guild.id}`);
-	console.log(guild.name + " successfully removed from the database!");
-}
+	bot.removeServer = function (guild) {
+		db.run(`DELETE FROM servers WHERE id = ${guild.id}`);
+		bot.log(guild.name + " successfully removed from the database!");
+	}
 
-exports.addServer = function(guild) {
-	db.run(`INSERT OR IGNORE INTO servers VALUES (${guild.id}, "${guild.name}", "${config.prefix}", ${guild.defaultChannel.id}, 0, "Welcome {user} to the server!", ${guild.defaultChannel.id}, 0, "{user} left the server :cry:")`);
-	console.log(guild.name + " successfully inserted into the database!");
-}
+	bot.addServer = function (guild) {
+		db.run(`INSERT OR IGNORE INTO servers VALUES (
+			"${guild.id}", 
+			"${guild.name}", 
+			"${bot.config.prefix}", 
+			${guild.defaultChannel.id}, 
+			0, 
+			"Welcome {user} to the server!", 
+			0, 
+			"{user} left the server :cry:", 
+			"none", 
+			"none", 
+			0)`
+		);
+		bot.log(guild.name + " successfully inserted into the database!");
+	}
 
-exports.setPrefix = function(prefix, guild) {
-	db.run("UPDATE servers SET prefix = \"" + prefix + "\" WHERE id = " + guild.id);
-	return prefix;
-}
+	bot.setPrefix = function (prefix, guild) {
+		db.run("UPDATE servers SET prefix = \"" + prefix + "\" WHERE id = " + guild.id);
+		return prefix;
+	}
 
-exports.setwelcomeMessageOn = function(setting) {
-	db.run("UPDATE servers SET welcomeMessagesEnabled = \"" + setting + "\" WHERE id = " + guild.id);
-	return setting;
-}
+	bot.setwelcomeMessageEnabled = function (guild, setting) {
+		db.run("UPDATE servers SET welcomeMessagesEnabled = \"" + setting + "\" WHERE id = " + guild.id);
+		return setting;
+	}
 
-exports.setWelcomeMessageText = function(text) {
-	db.run("UPDATE servers SET welcomeMessage = \"" + text + "\" WHERE id = " + guild.id);
-	return text;
-}
+	bot.setWelcomeMessageText = function (text) {
+		db.run("UPDATE servers SET welcomeMessage = \"" + text + "\" WHERE id = " + guild.id);
+		return text;
+	}
 
-exports.setWelcomeMessageChannel = function(channel) {
-	db.run("UPDATE servers SET welcomeMessage = \"" + channel.id + "\" WHERE id = " + guild.id);
-	return channel.id;
-}
+	bot.setAnnouncementChannel = function (channel) {
+		db.run("UPDATE servers SET announcementChannel = \"" + channel.id + "\" WHERE id = " + guild.id);
+		return channel.id;
+	}
 
-exports.getPrefix = function(bot, msg, callback) {
-	db.all("SELECT * FROM servers WHERE id = " + msg.guild.id, function(err, rows) {
-		if(err) 
-			console.log(err);
-		else 
-			callback(bot, msg, rows[0].prefix);
-	});
-}
-
-exports.displayServers = function(msg) {
-	db.each("SELECT * FROM servers", function(err, row) {
-		if (err)
-			msg.channel.send(err);
-		else
-			msg.channel.send("```\nServer ID: " + row.id + "\nName: " + row.name + "\nPrefix" + row.prefix + "\nWelcome Channel: " + row.welcomeChannel + "\nWelcome Messages Enabled: " + row.welcomeMessagesEnabled + "\nWelcome Message: " + row.welcomeMessage + "\nMod Messages Channel: " + row.modMessagesChannel + "\nMod Messages Enabled: " + row.modMessagesEnabled + "\n```")
-	});
-}
-
-exports.displayServer = function(msg, serverID) {
-	db.run(`SELECT * FROM servers WHERE id = ${serverID}`, function(err, row) {
-		if (err)
-			msg.channel.send(err);
-		else
-			msg.channel.send("```\nServer ID: " + row.id + "\nName: " + row.name + "\nPrefix" + row.prefix + "\nWelcome Channel: " + row.welcomeChannel + "\nWelcome Messages Enabled: " + row.welcomeMessagesEnabled + "\nWelcome Message: " + row.welcomeMessage + "\nMod Messages Channel: " + row.modMessagesChannel + "\nMod Messages Enabled: " + row.modMessagesEnabled + "\n```")
-	});
-}
-
-exports.enabled = function(command, guild) {
-    return true;
-}
-
-exports.sendServerCount = function(bot) {
-	unirest.post("https://bots.discordlist.net/api")
-	.send({"token": config.dlist, "servers": bot.guilds.size})
-	.end(function (response) {
-		console.log(response.body);
-	});
-
-	unirest.post("https://bots.discord.pw/api/bots/" + bot.user.id + "/stats")
-	.headers({'Authorization': config.dbotspw, 'Content-Type': 'application/json'})
-	.send({"server_count": bot.guilds.size})
-	.end(function (response) {
-		console.log(response.body);
-	});
-
-	unirest.post("https://discordbots.org/api/bots/" + bot.user.id + "/stats")
-	.headers({'Authorization': config.dbotsorg, 'Content-Type': 'application/json'})
-	.send({"server_count": bot.guilds.size})
-	.end(function (response) {
-		console.log(response.body);
-	});
-
-	console.log("All server counts posted successfully!");
-}
-
-exports.handler = function(bot, msg, prefix) {
-	if (msg.content.startsWith(prefix)) {
-		let args = msg.content.substring(msg.content.indexOf(" ") + 1, msg.content.length).split(" "),
-			content = msg.content.substring(msg.content.indexOf(" ") + 1, msg.content.length) || null,
-			command = msg.content.split(" ").shift().slice(prefix.length);
-		
-		try {
-			var found = false;
-			var files = fs.readdirSync("./modules/");
-			for(var i = 0; i < files.length; i++) {
-				if(files[i].substring(0, files[i].indexOf('.')) == command) found = true;
+	bot.getPrefix = function (msg) {
+		return new Promise(
+			function (resolve, reject) {
+				db.all(`SELECT * FROM servers WHERE id = "${msg.guild.id}"`, function (err, rows) {
+					if (err)
+						reject(err);
+					else
+						resolve(rows[0].prefix)
+				});
 			}
-			if(found) {
-				msg.content = content;
-				console.log(msg.author.username + " executed " + command + " in #" + msg.channel.name + " in " + msg.guild.name);
-				require(`./modules/${command}.js`).main(bot, msg, args);
+		)
+	}
+
+	/*bot.displayServers = function(msg) {
+		db.each("SELECT * FROM servers", function(err, row) {
+			if (err)
+				msg.channel.send(err);
+			else
+				msg.channel.send("```\nServer ID: " + row.id + "\nName: " + row.name + "\nPrefix" + row.prefix + "\nWelcome Channel: " + row.welcomeChannel + "\nWelcome Messages Enabled: " + row.welcomeMessagesEnabled + "\nWelcome Message: " + row.welcomeMessage + "\nMod Messages Channel: " + row.modMessagesChannel + "\nMod Messages Enabled: " + row.modMessagesEnabled + "\n```")
+		});
+	}
+
+	bot.displayServer = function(msg, serverID) {
+		db.run(`SELECT * FROM servers WHERE id = ${serverID}`, function(err, row) {
+			if (err)
+				msg.channel.send(err);
+			else
+				msg.channel.send("```\nServer ID: " + row.id + "\nName: " + row.name + "\nPrefix" + row.prefix + "\nWelcome Channel: " + row.welcomeChannel + "\nWelcome Messages Enabled: " + row.welcomeMessagesEnabled + "\nWelcome Message: " + row.welcomeMessage + "\nMod Messages Channel: " + row.modMessagesChannel + "\nMod Messages Enabled: " + row.modMessagesEnabled + "\n```")
+		});
+	}*/
+
+	//Implement categories of commands and check this based on those
+	bot.enabled = function (command, guild) {
+		return true;
+	}
+
+	bot.permLevel = function (msg) {
+		if (msg.author.id == bot.config.owner)
+			return 6;
+		else if (msg.author.id == msg.guild.owner.id)
+			return 5;
+		else if (msg.member.hasPermission("MANAGE_GUILD"))
+			return 4;
+		else if (msg.member.hasPermission("MANAGE_ROLES_OR_PERMISSIONS"))
+			return 3;
+		else if (msg.member.hasPermission("MANAGE_MESSAGES"))
+			return 2;
+		else if (!bot.blacklist(msg.author.id))
+			return 1;
+		else
+			return 0;
+	}
+
+	bot.blacklist = function (id) {
+		return false;
+	}
+
+	bot.processMessage = function (msg) {
+		var afkJson = fs.readFileSync("./afk.json"),
+			afk = JSON.parse(afkJson);
+		if(afk.length != 0) {
+			for (let i = 0; i < afk.length; i++) {
+				if (afk[i].id === msg.author.id) {
+					afk.splice(i, 1);
+					fs.writeFileSync("./afk.json", JSON.stringify(afk, null, 3));
+					msg.channel.send(":ok_hand: Welcome back **" + msg.author.username + "**! I've removed your AFK status!");
+				}
+				if (msg.mentions.users.size > 0 && afk.length != 0) {
+					if (msg.content.indexOf(afk[i].id) != -1 && msg.author.id != afk[i].id) {
+						msg.channel.send(":robot: **" + afk[i].name + "** is AFK: **" + afk[i].reason + "**");
+					}
+				}
 			}
-		} catch (err) {
-			msg.channel.send(err.toString());
-			console.error(err);
 		}
+
+		if(msg.author.bot) return;
+
+		if (msg.isMentioned(bot.user)) {
+			if (msg.content.toLowerCase().includes("what's your prefix?")) {
+				bot.getPrefix(msg).then(prefix => {
+					msg.reply("my prefix for this server is `" + prefix + "`!")
+				})
+			}
+
+			if (msg.content.toLowerCase().includes("resetprefix") && msg.member.hasPermission("ADMINISTRATOR")) {
+				bot.setPrefix(config.prefix, msg.guild);
+				msg.reply('I have reset this server\'s prefix to ``' + config.prefix + '``!')
+			}
+		}
+		
+		this.getPrefix(msg).then(prefix => {
+			if (msg.content.startsWith(prefix)) {
+				try {
+					let command = msg.content.split(" ").shift().slice(prefix.length),
+						cmd = bot.commands.get(command), //|| bot.commands.get(bot.aliases.get(command)),
+						perms = bot.permLevel(msg)
+					if (!cmd)
+						return;
+					else if (perms == 0)
+						msg.reply("you are blacklisted from using the bot!");
+					else if (perms < cmd.permission)
+						msg.reply("you do not have permission to do this!")
+					else if (perms > cmd.permission || perms == cmd.permission && bot.enabled(cmd)) {
+						msg.content = msg.content.substring(msg.content.indexOf(" ") + 1, msg.content.length) || null;
+						msg.args = msg.content.substring(msg.content.indexOf(" ") + 1, msg.content.length).split(" ");
+						bot.log(msg.author.username + " executed " + command + " in #" + msg.channel.name + " in " + msg.guild.name);
+						cmd.main(bot, msg);
+					}
+				} catch (err) {
+					msg.channel.send(err.toString());
+					bot.error(err);
+				}
+			}
+		})
+	}
+
+	bot.error = function (err) {
+		if (bot.shard)
+			console.log(this.timestamp() + " [SHARD " + bot.shard.id + "] [ERROR] | " + err.stack)
+		else
+			console.log(this.timestamp() + " [ERROR] | " + err.stack)
+	}
+
+	bot.debug = function (txt) {
+		if (bot.shard)
+			console.log(this.timestamp() + " [SHARD " + bot.shard.id + "] [DEBUG] | " + txt)
+		else
+			console.log(this.timestamp() + " [DEBUG] | " + txt)
+	}
+
+	bot.warn = function (txt) {
+		if (bot.shard)
+			console.log(this.timestamp() + " [SHARD " + bot.shard.id + "] [WARN]  | " + txt)
+		else
+			console.log(this.timestamp() + " [WARN]  | " + txt)
+	}
+
+	bot.log = function (txt) {
+		if (bot.shard)
+			console.log(this.timestamp() + " [SHARD " + bot.shard.id + "]  [LOG]  | " + txt)
+		else
+			console.log(this.timestamp() + "  [LOG]  | " + txt)
+	}
+
+	bot.timestamp = function () {
+		var currentTime = new Date(),
+			hours = currentTime.getHours(),
+			minutes = currentTime.getMinutes(),
+			seconds = currentTime.getSeconds()
+		if (minutes < 10)
+			minutes = "0" + minutes;
+		if (seconds < 10)
+			seconds = "0" + seconds;
+		return '[' + hours + ':' + minutes + ':' + seconds + ']';
+	}
+
+	bot.startGameCycle = function () {
+		bot.user.setGame(bot.config.games[Math.round(Math.random() * (bot.config.games.length - 1))] + ' | @' + bot.user.username + ' What\'s your prefix?');
+		setInterval(() => {
+			bot.user.setGame(bot.config.games[Math.round(Math.random() * (bot.config.games.length - 1))] + ' | @' + bot.user.username + ' What\'s your prefix?');
+		}, 300000);
 	}
 }

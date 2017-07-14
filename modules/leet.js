@@ -1,9 +1,10 @@
 module.exports = {
 	name: 'leet',
+	type: 'fun',
 	usage: 'leet <message>',
 	permission: 1,
 	help: 'Returns the input, but in 1337speak.',
-	main: function(bot, message, args) {
+	main: function(bot, message) {
 		message.channel.send(leet(message.content));
 		
 		function leet(str) {

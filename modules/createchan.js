@@ -1,13 +1,13 @@
 module.exports = {
 	name: 'createchan',
-	usage: '<p>createchan <channel>',
+	type: 'moderation', 
+	usage: 'createchan <channel>',
 	permission: 4,
 	help: 'Creates a channel of the specified name.',
-	main: function(bot, msg, args) {
+	main: function(bot, msg) {
 		if (msg.member.hasPermission('MANAGE_CHANNELS')){
 			try {
-				const channelToCreate = msg.content;
-				msg.guild.createChannel(channelToCreate, 'text')
+				msg.guild.createChannel(msg.content, 'text')
 				.then(chan => msg.channel.send("Alright, I have created the channel <#" + chan.id + ">!"))
 			}
 			catch(err) {

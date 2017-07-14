@@ -1,9 +1,10 @@
 module.exports = {
 	name: 'urban',
+	type: 'fun',
 	usage: 'urban <word>',
 	permission: 1,
 	help: 'Defines a word from the Urban Dictionary.',
-	main: function(bot, msg, args) {
+	main: function(bot, msg) {
 		var urban = require('urban'),
 		definition = urban(msg.content);
 		try {

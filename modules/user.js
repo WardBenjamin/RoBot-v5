@@ -2,10 +2,11 @@ const Discord = require('discord.js');
 
 module.exports = {
 	name: 'user',
-	usage: '<p>user <optional-mention>',
+	type: 'utility',
+	usage: 'user <optional-mention>',
 	permission: 1,
 	help: 'Provides information about a user.',
-	main: function(bot, msg, args) {
+	main: function(bot, msg) {
 		if (msg.mentions.users.array()[0])
 			var member = msg.guild.members.get(msg.mentions.users.array()[0].id);
 		else if(bot.users.get(msg.content) != null)

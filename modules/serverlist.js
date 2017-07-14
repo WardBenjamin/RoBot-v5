@@ -1,9 +1,11 @@
+//Fix this shit with pagination
 module.exports = {
 	name: 'serverlist',
+	type: 'core',
 	usage: 'serverlist',
 	permission: 1,
 	help: 'Lists the servers the bot is in.',
-	main: function(bot, msg, args) {
+	main: function(bot, msg) {
 		var str = "";
 		var guilds = bot.guilds.array()
 		for(var i = 0; i < guilds.length; i++) {

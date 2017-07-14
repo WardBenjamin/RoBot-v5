@@ -1,12 +1,12 @@
 module.exports = {
 	name: 'timeout',
+	type: 'moderation',
 	usage: 'timeout <duration>',
 	permission: 2,
 	help: 'Times out a specified channel for a period of time',
-	main: function(bot, msg, args) {
+	main: function(bot, msg) {
 		var time = msg.content;
 		var id;
-		console.log("\`" + time + "\`")
 		
 		if(!isNaN(time) && msg.member.hasPermission('MANAGE_MESSAGES')) {
 			if(msg.guild.id == '176186766946992128')

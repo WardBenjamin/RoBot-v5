@@ -8,10 +8,11 @@ var google = new GoogleSearch({
 
 module.exports = {
 	name: 'google',
+	type: 'utility',
 	usage: 'google <query>',
 	permission: 1,
 	help: 'Queries Google for information.',
-	main: function(bot, message, args) {
+	main: function(bot, message) {
         google.build({
 			q: message.content,
 			num: 1, // Number of search results to return between 1 and 10, inclusive
@@ -20,11 +21,11 @@ module.exports = {
 			console.log(response);
 			if (err) {
                 console.error(err);
-                message.channel.sendMessage("ERROR: Search failed");
+                message.channel.send("ERROR: Search failed");
 				return;
             }
 			if (response.totalResults === 0 || response.items == undefined) {
-                message.channel.sendMessage("No results.");
+                message.channel.send("No results.");
 				return;
             }
 			else if(response.items != undefined) {
@@ -39,7 +40,7 @@ module.exports = {
 				.setDescription(desc + ' [more](' + link + ')')
 				.setTimestamp()
 				.setFooter('Powered by RoBot', bot.user.avatarURL)
-				message.channel.sendEmbed(results);
+				message.channel.send({embed:results});
 			}
 		});
 	}

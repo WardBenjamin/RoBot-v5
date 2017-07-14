@@ -4,10 +4,11 @@ const Discord = require("discord.js");
 
 module.exports = {
 	name: 'expand',
+	type: 'utility',
 	usage: 'expand <URL>',
 	permission: 1,
 	help: 'Expands a goo.gl URL.',
-	main: function(bot, msg, args) {
+	main: function(bot, msg) {
 		googl.setKey(config.googl);
         
 		googl.expand(msg.content)

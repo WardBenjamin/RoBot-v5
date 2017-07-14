@@ -1,9 +1,10 @@
 module.exports = {
 	name: '8ball',
+	type: 'fun',
 	usage: '8ball',
 	permission: 1,
 	help: 'Simulates an 8ball.',
-	main: function(bot, msg, args) {
+	main: function(bot, msg) {
 		var predictions = [
 			"It is certain",
 			"It is decidedly so",

@@ -4,10 +4,11 @@ const Discord = require("discord.js");
 
 module.exports = {
 	name: 'shorten',
+	type: 'utility',
 	usage: 'shorten <URL>',
 	permission: 1,
 	help: 'Shortens a URL.',
-	main: function(bot, msg, args) {
+	main: function(bot, msg) {
 		googl.setKey(config.googl);
         
 		googl.shorten(msg.content)

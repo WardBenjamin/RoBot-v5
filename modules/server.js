@@ -1,9 +1,10 @@
 module.exports = {
 	name: 'server',
+	type: 'utility',
 	usage: 'server',
 	permission: 1,
 	help: 'Provides information about the server.',
-	main: function(bot, msg, args) {
+	main: function(bot, msg) {
 		const Discord = require('discord.js');
 		const embed = new Discord.RichEmbed()
 			.setTitle(msg.guild.name)

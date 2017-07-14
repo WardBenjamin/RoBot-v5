@@ -3,10 +3,11 @@ var Discord = require('discord.js');
 
 module.exports = {
 	name: 'advice',
+    type: 'fun',
 	usage: 'advice',
 	permission: 1,
 	help: 'Gets advice.',
-	main: function(bot, msg, args) {
+	main: function(bot, msg) {
         unirest.get('http://api.adviceslip.com/advice')
         .end(function (result) {
             var advice = JSON.parse(result.body)

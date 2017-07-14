@@ -1,9 +1,10 @@
 module.exports = {
     name: 'ascii',
+    type: 'fun',
     usage: 'ascii',
     permission: 1,
     help: 'Returns a random ASCII face.',
-    main: function(bot, msg, args) {
+    main: function(bot, msg) {
         var faces = [
             "( .-. )",
             "( .o.)",

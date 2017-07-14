@@ -3,10 +3,11 @@ var Discord = require('discord.js');
 
 module.exports = {
 	name: 'news',
+	type: 'utility',
 	usage: 'news <query>',
 	permission: 1,
 	help: 'Gets news from Google News.',
-	main: function(bot, msg, args) {
+	main: function(bot, msg) {
 		var e = new Discord.RichEmbed();
 		myGoogleNews.resultsPerPage = 10;
 		myGoogleNews(msg.content, function (err, res){
