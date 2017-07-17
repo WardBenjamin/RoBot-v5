@@ -3,9 +3,12 @@ const db = new sqlite3.Database('./data/servers.sqlite');
 const fs = require("fs");
 const unirest = require("unirest");
 var afkJson = fs.readFileSync("./afk.json"),
-	afk = JSON.parse(afkJson);
+	afk = JSON.parse(afkJson),
+	channel = null,
+	stdin = process.openStdin();
 
 module.exports = (bot) => {
+	//Work on making this send real guild size
 	bot.sendServerCount = function () {
 		unirest.post("https://bots.discordlist.net/api")
 			.send({ "token": config.dlist, "servers": bot.guilds.size })
@@ -181,10 +184,12 @@ module.exports = (bot) => {
 			}
 		}
 
+		if(channel && msg.channel.id == channel) bot.log(msg.guild.name + " | " + msg.channel.name + " | " + msg.member.displayName + " | " + msg.cleanContent);
+
 		if(msg.author.bot) return;
 
 		if (msg.isMentioned(bot.user)) {
-			if (msg.content.toLowerCase().includes("what's your prefix?")) {
+			if (msg.content.toLowerCase().includes("what's your prefix") || msg.content.toLowerCase().includes("whats your prefix")) {
 				bot.getPrefix(msg).then(prefix => {
 					msg.reply("my prefix for this server is `" + prefix + "`!")
 				})
@@ -267,5 +272,34 @@ module.exports = (bot) => {
 		setInterval(() => {
 			bot.user.setGame(bot.config.games[Math.round(Math.random() * (bot.config.games.length - 1))] + ' | @' + bot.user.username + ' What\'s your prefix?');
 		}, 300000);
+	}
+
+	bot.awaitConsoleInput = function() {
+		stdin.addListener("data", function(d) {
+			d = d.toString().trim()
+			if(d.startsWith("channels")) {
+				bot.channels.forEach(channel => {
+					if(channel.type == "text" && channel.permissionsFor(channel.guild.me).has(["READ_MESSAGES", "SEND_MESSAGES"]))
+						bot.log(channel.guild.name + " | #" + channel.name + " | (" + channel.id + ")")
+				})
+			} else if(d.startsWith("bind") && channel) {
+				d = d.substring(d.indexOf(" ") + 1, d.length)
+				if(bot.channels.get(d)) {
+					channel = d;
+					bot.log("Console rebound to channel " + bot.channels.get(d).name + " in " + bot.channels.get(d).guild.name + "!");
+				}
+			} else if(channel) {
+				try {
+					bot.channels.get(channel).send(d);
+				} catch(err) {
+					bot.log(err);
+				}
+			} else {
+				if(bot.channels.get(d)) {
+					channel = d;
+					bot.log("Console bound to channel " + bot.channels.get(d).name + " in " + bot.channels.get(d).guild.name + "!");
+				}
+			}
+		});
 	}
 }

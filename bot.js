@@ -31,4 +31,5 @@ readdir('./events/', (err, files) => {
 	});
 	bot.log(`Events loaded!`);
 });
+
 bot.login(require("./config.json").token);
