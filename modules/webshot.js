@@ -17,6 +17,7 @@ module.exports = {
             format: 'png',
             quality: 75,
         }, (err, data) => {
+            bot.log(data.file);
             msg.channel.send("Screenshot of <" + msg.content + ">", {file:data.file})
         });
     }
