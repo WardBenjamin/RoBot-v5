@@ -1,7 +1,7 @@
 //Work on finishing welcomemessage, farewell, joinrole, botrole, antiinvite, antimentionspam
 
 const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database('servers.sqlite');
+const db = new sqlite3.Database('../data/servers.sqlite');
 
 module.exports = {
 	name: 'settings',

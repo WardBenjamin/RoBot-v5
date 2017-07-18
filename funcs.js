@@ -45,8 +45,8 @@ module.exports = (bot) => {
 				leaveMessagesEnabled BOOLEAN, 
 				leaveMessage VARCHAR(200),
 				banMessagesEnabled BOOLEAN,
-				banMessae VARCHAR(200),
-				joinRole VARCHAR(20), 
+				banMessage VARCHAR(200),
+				joinRole VARCHAR(20),
 				joinBotRole VARCHAR(20), 
 				noInviteLinks BOOLEAN,
 				noMentionSpam BOOLEAN)`
