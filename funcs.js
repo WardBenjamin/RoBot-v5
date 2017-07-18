@@ -1,5 +1,5 @@
 const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database('./data/servers.sqlite');
+const db = new sqlite3.Database('./servers.sqlite');
 const fs = require("fs");
 const unirest = require("unirest");
 var afkJson = fs.readFileSync("./afk.json"),
