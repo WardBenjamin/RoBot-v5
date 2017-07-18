@@ -43,23 +43,29 @@ module.exports = (bot) => {
 				welcomeMessagesEnabled BOOLEAN, 
 				welcomeMessage VARCHAR(200), 
 				leaveMessagesEnabled BOOLEAN, 
-				leaveMessage VARCHAR(200), 
+				leaveMessage VARCHAR(200),
+				banMessagesEnabled BOOLEAN,
+				banMessae VARCHAR(200),
 				joinRole VARCHAR(20), 
 				joinBotRole VARCHAR(20), 
-				noInviteLinks BOOLEAN)`
+				noInviteLinks BOOLEAN,
+				noMentionSpam BOOLEAN)`
 			);
 			bot.guilds.forEach(guild => {
 				db.run(`INSERT OR IGNORE INTO servers VALUES (
 					"${guild.id}", 
 					"${guild.name}", 
 					"${bot.config.prefix}", 
-					${guild.defaultChannel.id}, 
+					"${guild.defaultChannel.id}", 
 					0, 
 					"Welcome {user} to the server!", 
 					0, 
-					"{user} left the server :cry:", 
+					"{user} left the server :cry:",
+					0,
+					"{user} was banned from the server :hammer:", 
 					"none", 
 					"none", 
+					0,
 					0)`
 				);
 			});
@@ -77,13 +83,16 @@ module.exports = (bot) => {
 			"${guild.id}", 
 			"${guild.name}", 
 			"${bot.config.prefix}", 
-			${guild.defaultChannel.id}, 
+			"${guild.defaultChannel.id}", 
 			0, 
 			"Welcome {user} to the server!", 
 			0, 
-			"{user} left the server :cry:", 
+			"{user} left the server :cry:",
+			0,
+			"{user} was banned from the server :hammer:", 
 			"none", 
 			"none", 
+			0,
 			0)`
 		);
 		bot.log(guild.name + " successfully inserted into the database!");
@@ -100,7 +109,7 @@ module.exports = (bot) => {
 	}
 
 	bot.setWelcomeMessageText = function (text) {
-		db.run("UPDATE servers SET welcomeMessage = \"" + text + "\" WHERE id = " + guild.id);
+		db.run(`UPDATE servers SET welcomeMessage = "${text}" WHERE id = "${guild.id}"`);
 		return text;
 	}
 
@@ -167,6 +176,10 @@ module.exports = (bot) => {
 	}
 
 	bot.processMessage = function (msg) {
+		if(channel && msg.channel.id == channel) bot.log(msg.guild.name + " | " + msg.channel.name + " | " + msg.member.displayName + " | " + msg.cleanContent);
+
+		if(msg.author.bot) return;
+
 		var afkJson = fs.readFileSync("./afk.json"),
 			afk = JSON.parse(afkJson);
 		if(afk.length != 0) {
@@ -184,10 +197,6 @@ module.exports = (bot) => {
 			}
 		}
 
-		if(channel && msg.channel.id == channel) bot.log(msg.guild.name + " | " + msg.channel.name + " | " + msg.member.displayName + " | " + msg.cleanContent);
-
-		if(msg.author.bot) return;
-
 		if (msg.isMentioned(bot.user)) {
 			if (msg.content.toLowerCase().includes("what's your prefix") || msg.content.toLowerCase().includes("whats your prefix")) {
 				bot.getPrefix(msg).then(prefix => {
@@ -204,18 +213,16 @@ module.exports = (bot) => {
 		this.getPrefix(msg).then(prefix => {
 			if (msg.content.startsWith(prefix)) {
 				try {
-					let command = msg.content.split(" ").shift().slice(prefix.length),
+					let args = msg.content.split(/\s+/g),
+						command = args.shift().slice(prefix.length).toLowerCase(),
 						cmd = bot.commands.get(command), //|| bot.commands.get(bot.aliases.get(command)),
 						perms = bot.permLevel(msg)
-					if (!cmd)
-						return;
-					else if (perms == 0)
-						msg.reply("you are blacklisted from using the bot!");
-					else if (perms < cmd.permission)
-						msg.reply("you do not have permission to do this!")
-					else if (perms > cmd.permission || perms == cmd.permission && bot.enabled(cmd)) {
+					if (!cmd) return;
+					else if (perms == 0) return msg.reply("you are blacklisted from using the bot!");
+					else if (perms < cmd.permission) return msg.reply("you do not have permission to do this!")
+					else if (bot.enabled(cmd)) {
 						msg.content = msg.content.substring(msg.content.indexOf(" ") + 1, msg.content.length) || null;
-						msg.args = msg.content.substring(msg.content.indexOf(" ") + 1, msg.content.length).split(" ");
+						msg.args = args;
 						bot.log(msg.author.username + " executed " + command + " in #" + msg.channel.name + " in " + msg.guild.name);
 						cmd.main(bot, msg);
 					}

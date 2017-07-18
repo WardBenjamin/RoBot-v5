@@ -12,7 +12,7 @@ module.exports = {
         var content = msg.content.replace(" ", "%20")
 
         unirest.post("https://is-now-illegal.firebaseio.com/queue/tasks.json")
-			.send({task:'gif', word: content})
+			.send({task:'gif', word: content.toUpperCase()})
 			.end(function (response) {
 				bot.log(response.body);
             });
@@ -24,7 +24,6 @@ module.exports = {
                         var res = result.body;
                         var embed = new Discord.RichEmbed()
                         .setImage(res.url.replace(" ", "%20"));
-                        msg.channel.send({embed:embed});
                     } catch(err) {
                         msg.channel.send(err);
                     }

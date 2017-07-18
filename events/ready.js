@@ -1,5 +1,3 @@
-const fs = require('fs');
-
 exports.run = (bot) => {
 	bot.config = require('../config.json');
 	//bot.sendServerCount();

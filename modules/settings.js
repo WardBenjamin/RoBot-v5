@@ -1,4 +1,4 @@
-//Work on finishing welcomemessage, farewell, joinrole, botrole
+//Work on finishing welcomemessage, farewell, joinrole, botrole, antiinvite, antimentionspam
 
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('servers.sqlite');
@@ -64,7 +64,7 @@ module.exports = {
 				{ time: 15000 }
 			);
 			collector.on('message', m => {
-				
+				msg.channel.send(`Welcome message set to \`${bot.setWelcomeMessageText(m.content)}\`!`);
 			});
 			collector.on('end', collected => {
 				if(collected.size == 0)

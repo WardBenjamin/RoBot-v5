@@ -24,7 +24,7 @@ module.exports = {
 		var info = new Discord.RichEmbed()
 		.setAuthor(user.username + '#' + user.discriminator, user.avatarURL)
 		.setDescription("User Information")
-		.setColor(0x1675DB)
+		.setColor(member.displayHexColor)
 		.setFooter('Triggered by ' + msg.author.username, msg.author.avatarURL)
 		.setTimestamp()
 		.setThumbnail(user.avatarURL)
