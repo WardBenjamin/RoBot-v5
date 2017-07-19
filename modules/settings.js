@@ -13,22 +13,11 @@ module.exports = {
 		if (!msg.member.hasPermission('MANAGE_GUILD')) return msg.reply("you do not have permission to manage this server's setings!")
 
 		if (msg.args[0] == "greeting") {
-			getWelcomeMessageStatus(msg.guild.id).then(value => {
+			bot.getWelcomeMessageStatus(msg.guild.id).then(value => {
 				welcomeMessageEnabled(value);
 			})
 		} else
 			msg.reply("please specify an argument! Accepted arguments: greeting, farewell, joinrole, botrole")
-
-		function getWelcomeMessageStatus(id) {  
-			return new Promise((resolve, reject) => {
-				db.all("SELECT * FROM servers WHERE id = " + id, function(err, rows) {
-					if(rows[0].welcomeMessagesEnabled == 1)
-						resolve(true);
-					else 
-						resolve(false);
-				});
-			})
-		}
 
 		function welcomeMessageEnabled(value) {
 			msg.channel.send(`The welcome message for this server is **${value ? 'on' : 'off'}**. Do you want to turn it **${value ? 'off' : 'on'}**? (Reply with 'yes' or 'no')`);

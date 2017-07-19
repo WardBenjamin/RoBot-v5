@@ -113,6 +113,17 @@ module.exports = (bot) => {
 		return text;
 	}
 
+	function getWelcomeMessageStatus(id) {  
+		return new Promise((resolve, reject) => {
+			db.all("SELECT * FROM servers WHERE id = " + id, function(err, rows) {
+				if(rows[0].welcomeMessagesEnabled == 1)
+					resolve(true);
+				else 
+					resolve(false);
+			});
+		})
+	}
+
 	bot.setAnnouncementChannel = function (channel) {
 		db.run("UPDATE servers SET announcementChannel = \"" + channel.id + "\" WHERE id = " + guild.id);
 		return channel.id;
