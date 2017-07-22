@@ -7,6 +7,6 @@ module.exports = {
     permission: 1,
     help: 'Returns a joke.',
     main: function (bot, msg) {
-        msg.reply(oneLinerJoke.getRandomJoke())
+        msg.reply(oneLinerJoke.getRandomJoke().body)
     }
 };
