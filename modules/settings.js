@@ -12,12 +12,12 @@ module.exports = {
 	main: function(bot, msg) {
 		if (!msg.member.hasPermission('MANAGE_GUILD')) return msg.reply("you do not have permission to manage this server's setings!")
 
-		if (msg.args[0] == "greeting") {
+		if (msg.args[0] == "welcomemessage") {
 			bot.getWelcomeMessageStatus(msg.guild.id).then(value => {
 				welcomeMessageEnabled(value);
 			})
 		} else
-			msg.reply("please specify an argument! Accepted arguments: greeting, farewell, joinrole, botrole")
+		msg.reply("please specify an argument! Accepted arguments: announcementchannel, welcomemessage, leavemessage, banmessage, joinrole, botrole, invitelinks, mentionspam")
 
 		function welcomeMessageEnabled(value) {
 			msg.channel.send(`The welcome message for this server is **${value ? 'on' : 'off'}**. Do you want to turn it **${value ? 'off' : 'on'}**? (Reply with 'yes' or 'no')`);
