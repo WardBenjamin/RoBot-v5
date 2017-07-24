@@ -28,7 +28,7 @@ module.exports = {
                 "reason": reason
             });
             fs.writeFileSync("./afk.json", JSON.stringify(afk, null, 3));
-            msg.channel.send(":robot: **" + msg.author.username + "** is AFK: **" + reason + "**");
+            msg.channel.send(":robot: **" + msg.member.displayName + "** is AFK: **" + reason + "**");
         })
 	}
 };

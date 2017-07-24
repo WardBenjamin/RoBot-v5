@@ -113,7 +113,7 @@ module.exports = (bot) => {
 		return text;
 	}
 
-	function getWelcomeMessageStatus(id) {  
+	bot.getWelcomeMessageStatus = function(id) {  
 		return new Promise((resolve, reject) => {
 			db.all("SELECT * FROM servers WHERE id = " + id, function(err, rows) {
 				if(rows[0].welcomeMessagesEnabled == 1)
@@ -202,7 +202,13 @@ module.exports = (bot) => {
 				}
 				if (msg.mentions.users.size > 0 && afk.length != 0) {
 					if (msg.content.indexOf(afk[i].id) != -1 && msg.author.id != afk[i].id) {
-						msg.channel.send(":robot: **" + afk[i].name + "** is AFK: **" + afk[i].reason + "**");
+						var nick = msg.guild.members.get(afk[i].id).displayName
+						msg.channel.send(":robot: **" + nick + "** is AFK: **" + afk[i].reason + "**")
+						.then(msg => {
+							setTimeout(function() {
+								msg.delete()
+							}, 20000)
+						});
 					}
 				}
 			}

@@ -1,4 +1,4 @@
-var oneLinerJoke = require('one-liner-joke');
+var jokes = require('../data/jokes.json');
 
 module.exports = {
     name: 'joke',
@@ -7,6 +7,8 @@ module.exports = {
     permission: 1,
     help: 'Returns a joke.',
     main: function (bot, msg) {
-        msg.reply(oneLinerJoke.getRandomJoke())
+        var min = 0,
+            max = jokes.length - 1;
+        msg.reply(jokes[Math.floor(Math.random() * (max - min + 1)) + min])
     }
 };
