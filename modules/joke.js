@@ -9,6 +9,6 @@ module.exports = {
     main: function (bot, msg) {
         var min = 0,
             max = jokes.length - 1;
-        msg.reply(jokes[Math.floor(Math.random() * (max - min + 1)) + min])
+        msg.reply(jokes[Math.floor(Math.random() * (max - min + 1)) + min].body)
     }
 };
