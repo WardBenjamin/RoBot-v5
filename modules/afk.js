@@ -18,7 +18,7 @@ module.exports = {
             if(msg.content == prefix + "afk")
                 var reason = "Not Specified"
             else
-                var reason = msg.content;
+                var reason = msg.content.replace('@everyone', '@nope').replace('@here', '@nope');
 
             if (reason.length > 150)
                 return msg.channel.send("Your AFK reason can't be above 150 characters!");
