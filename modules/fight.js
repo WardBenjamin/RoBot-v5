@@ -25,7 +25,13 @@ module.exports = {
 		var turn1 = (Math.random() > 0.5);
 		var times = 0;
 
-		if (player2 != null) {
+		if (player2.id == bot.user.id) {
+			msg.channel.send(bot.user.username + " COMPLETELY AND UTTERLY DESTROYED " + player1.username + "! *[-999999 HP] [0 HP remaining]*")
+			msg.channel.send("*Hint: Don't try to fight me! Nothing personal, kid.*")
+		} else if(player2.id == bot.config.owner) {
+			msg.channel.send(player2.username + " COMPLETELY AND UTTERLY DESTROYED " + player1.username + "! *[-999999 HP] [0 HP remaining]*")
+			msg.channel.send("*Hint: Don't try to fight " + player2.username + "! Nothing personal, kid.*")
+		} else if (player2 != null) {
 			while (hp1 > 0 && hp2 > 0) {
 				times++;
 				var i = Math.floor(Math.random() * responses.length);
