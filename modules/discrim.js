@@ -10,7 +10,7 @@ module.exports = {
         if (discrim == null)
             discrim = msg.author.discriminator;
 
-        if (discrum.length != 4)
+        if (discrim.length != 4)
             msg.channel.send("That is not a valid discriminator!")
         else {
             msg.channel.send("Hunting for other users with the discriminator #" + discrim + "...")
