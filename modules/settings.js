@@ -68,14 +68,14 @@ module.exports = {
 			msg.channel.send("What would you like the welcome message to be? You may include the following arguments in your welcome message: ``{servername}``, ``{username}``, ``{usermention}``, ``{userdiscrim}``, ``{membercount}``")
 			var collector = msg.channel.createCollector (
 				m => msg.author.id == m.author.id,
-				{ time: 15000 }
+				{ time: 30000 }
 			);
 			collector.on('message', m => {
-				msg.channel.send(`Welcome message set to \`${bot.setWelcomeMessageText(m.content)}\`!`);
+				m.channel.send(`Welcome message set to \`${bot.setWelcomeMessageText(m.guild.id, m.content)}\`!`);
 			});
 			collector.on('end', collected => {
 				if(collected.size == 0)
-					msg.channel.send("No messages were detected within 15 seconds. Aborting...")
+					msg.channel.send("No messages were detected within 30 seconds. Aborting...")
 				console.log(`Collected ${collected.size} items`)
 			});
 		}

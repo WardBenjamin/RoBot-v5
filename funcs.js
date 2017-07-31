@@ -108,8 +108,8 @@ module.exports = (bot) => {
 		return setting;
 	}
 
-	bot.setWelcomeMessageText = function (text) {
-		db.run(`UPDATE servers SET welcomeMessage = "${text}" WHERE id = "${guild.id}"`);
+	bot.setWelcomeMessageText = function (id, text) {
+		db.run(`UPDATE servers SET welcomeMessage = "${text}" WHERE id = "${id}"`);
 		return text;
 	}
 
