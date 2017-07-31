@@ -8,6 +8,7 @@ module.exports = {
 	type: 'utility',
 	usage: 'sponsor <sponsor>',
 	permission: 1,
+	help: 'Gets all FRC teams sponsored by a certain sponsor.',
 	main: function(bot, msg) {
 		if(msg.content == null || msg.content.trim().substring(1, msg.content.trim().length).toLowerCase() == "sponsor") 
 			return msg.channel.send("Please specify a sponsor! Command syntax: `sponsor <sponsor>`");
