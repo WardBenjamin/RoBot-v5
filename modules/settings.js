@@ -43,12 +43,15 @@ module.exports = {
 			collector.on('message', m => {
 				var e = value;
 				if(m.content.toLowerCase() == 'yes' && m.author.id == msg.author.id) {
-				if(value)
+					if(value)
 						value = 0
 					else
 						value = 1
 					e = bot.funcs.setwelcomeMessageEnabled(msg.guild, value)
 					msg.channel.send(`Welcome messages ${e ? 'enabled' : 'disabled'}.`);
+					collector.stop();
+				} else if (m.content.toLowerCase() == 'no' && m.author.id == msg.author.id) {
+					msg.channel.send(`Welcome messages are staying **${value ? 'on' : 'off'}**.`)
 					collector.stop();
 				}
 				if(e)
