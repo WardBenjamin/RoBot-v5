@@ -39,6 +39,7 @@
     "uws": "^8.14.0",
     "xkcd": "^1.1.2",
     "xml2js": "^0.4.17",
+	"jquery-csv": "0.8.3",
 	"moment-duration-format": "*"
   }
 }
