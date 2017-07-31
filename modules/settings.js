@@ -40,14 +40,14 @@ module.exports = {
 				m => (m.content.toLowerCase()== 'yes' || m.content.toLowerCase() == 'no'),
 				{ time: 15000 }
 			);
-			collector.on('message', m => {
+			collector.on('collect', m => {
 				var e = value;
 				if(m.content.toLowerCase() == 'yes' && m.author.id == msg.author.id) {
 					if(value)
 						value = 0
 					else
 						value = 1
-					e = bot.funcs.setwelcomeMessageEnabled(msg.guild, value)
+					e = bot.setwelcomeMessageEnabled(msg.guild, value)
 					msg.channel.send(`Welcome messages ${e ? 'enabled' : 'disabled'}.`);
 					collector.stop();
 				} else if (m.content.toLowerCase() == 'no' && m.author.id == msg.author.id) {
