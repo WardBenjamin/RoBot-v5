@@ -9,11 +9,12 @@ module.exports = {
 			return msg.channel.send(":x: You do not have the necessary permissions to perform this action!")
 		if (!msg.guild.members.get(bot.user.id).hasPermission('MANAGE_ROLES_OR_PERMISSIONS'))
 			return msg.channel.send(":x: I can't assign or deassign roles in this server!");
-		if (msg.guild.members.get(bot.user.id).highestRole.comparePositionTo(role) < 1)
-			return msg.channel.send(':x: I don\'t have permissions to edit this role, please check the role order!');
 
 		var user = msg.mentions.users.array()[0];
-		let role = msg.guild.roles.find("name", msg.args[1]);
+		let role = msg.guild.roles.find("name", msg.content.split(" ").splice(1).join(" ").trim());
+
+		if (msg.guild.members.get(bot.user.id).highestRole.comparePositionTo(role) < 1)
+			return msg.channel.send(':x: I don\'t have permissions to edit this role, please check the role order!');
 		if (!role)
 			msg.channel.send(":x: Role does not exist!");
 		else if(role.comparePositionTo(msg.member.highestRole) < 0) {
