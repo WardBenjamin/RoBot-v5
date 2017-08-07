@@ -10,8 +10,9 @@ module.exports = {
 		if (!msg.guild.members.get(bot.user.id).hasPermission('MANAGE_ROLES_OR_PERMISSIONS'))
 			return msg.channel.send(":x: I can't assign or deassign roles in this server!");
 
-		var user = msg.mentions.users.array()[0];
-		let role = msg.guild.roles.find("name", msg.content.split(" ").splice(1).join(" ").trim());
+		var user = msg.mentions.users.array()[0],
+			roleToTake = msg.content.split(" ").splice(1).join(" ").trim()
+		let role = msg.guild.roles.find("name", roleToTake);
 		
 		if (!role)
 			return msg.channel.send(":x: Role does not exist!");

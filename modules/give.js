@@ -6,11 +6,12 @@ module.exports = {
 	help: 'Gives a user a specified role.',
 	main: function(bot, msg) {
 		if (!msg.member.hasPermission('MANAGE_ROLES_OR_PERMISSIONS') && !msg.member.hasPermission('ADMINISTRATOR'))
-			return msg.channel.send(":x: You do not have the necessary permissions to perform this action!")
+			return msg.channel.send(":x: You do not have the necessary permissions to perform this action!");
 		if (!msg.guild.members.get(bot.user.id).hasPermission('MANAGE_ROLES_OR_PERMISSIONS'))
 			return msg.channel.send(":x: I can't assign or deassign roles in this server!");
 
-		var user = msg.mentions.users.array()[0];
+		var user = msg.mentions.users.array()[0],
+			roleToGive = msg.content.split(" ").splice(1).join(" ").trim()
 		let role = msg.guild.roles.find("name", msg.content.split(" ").splice(1).join(" ").trim());
 
 		if (!role)
@@ -18,7 +19,7 @@ module.exports = {
 		if (msg.guild.members.get(bot.user.id).highestRole.comparePositionTo(role) < 1)
 			return msg.channel.send(':x: I don\'t have permissions to edit this role, please check the role order!');
 		if(msg.member.highestRole.comparePositionTo(role) < 1)
-			return msg.channel.send(":x: Your highest role is lower than this role, so you cannot assign it!")
+			return msg.channel.send(":x: Your highest role is lower than this role, so you cannot assign it!");
 
 			msg.guild.members.get(user.id).addRole(role).then(m => {
 				if(m.roles.has(role.id))
