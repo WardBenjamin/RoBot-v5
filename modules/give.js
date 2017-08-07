@@ -5,11 +5,9 @@ module.exports = {
 	permission: 3,
 	help: 'Gives a user a specified role.',
 	main: function(bot, msg) {
-		const isCommander = ["171319044715053057", "180094452860321793"];
-
-		if (!msg.member.hasPermission('MANAGE_ROLES_OR_PERMISSIONS') && !msg.member.hasPermission('ADMINISTRATOR') && !isCommander.indexOf(msg.author.id) > -1)
+		if (!msg.member.hasPermission('MANAGE_ROLES_OR_PERMISSIONS') && !msg.member.hasPermission('ADMINISTRATOR'))
 			return msg.channel.send(":x: You do not have the necessary permissions to perform this action!")
-		if (!msg.guild.fetchMember(bot.user).hasPermission('MANAGE_ROLES_OR_PERMISSIONS'))
+		if (!msg.guild.members.get(bot.user.id).hasPermission('MANAGE_ROLES_OR_PERMISSIONS'))
 			return msg.channel.send(":x: I can't assign or deassign roles in this server!");
 		if (msg.guild.fetchMember(bot.user).highestRole.comparePositionTo(role) < 1)
 			return msg.channel.send(':x: I don\'t have permissions to edit this role, please check the role order!');
