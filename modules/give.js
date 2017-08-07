@@ -13,8 +13,7 @@ module.exports = {
 			return msg.channel.send(':x: I don\'t have permissions to edit this role, please check the role order!');
 
 		var user = msg.mentions.users.array()[0];
-		var roleToGive = msg.content.split(" ").splice(1).join(" ").trim();
-		let role = msg.guild.roles.find("name", roleToGive);
+		let role = msg.guild.roles.find("name", msg.content);
 		if (!role)
 			msg.channel.send(":x: Role does not exist!");
 		else if(role.comparePositionTo(msg.member.highestRole) < 0) {
