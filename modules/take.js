@@ -17,7 +17,7 @@ module.exports = {
 			return msg.channel.send(":x: Role does not exist!");
 		if (msg.guild.members.get(bot.user.id).highestRole.comparePositionTo(role) < 1)
 			return msg.channel.send(':x: I don\'t have permissions to edit this role, please check the role order!');
-		if(!role.comparePositionTo(msg.member.highestRole) < 1)
+		if(msg.member.highestRole.comparePositionTo(role) < 1)
 			return msg.channel.send(":x: Your highest role is lower than this role, so you cannot deassign it!")
 
 		msg.guild.members.get(user.id).removeRole(role).then(m => {

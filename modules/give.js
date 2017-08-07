@@ -13,18 +13,18 @@ module.exports = {
 		var user = msg.mentions.users.array()[0];
 		let role = msg.guild.roles.find("name", msg.content.split(" ").splice(1).join(" ").trim());
 
-		if (msg.guild.members.get(bot.user.id).highestRole.comparePositionTo(role) < 1)
-			return msg.channel.send(':x: I don\'t have permissions to edit this role, please check the role order!');
 		if (!role)
 			msg.channel.send(":x: Role does not exist!");
-		else if(role.comparePositionTo(msg.member.highestRole) < 0) {
+		if (msg.guild.members.get(bot.user.id).highestRole.comparePositionTo(role) < 1)
+			return msg.channel.send(':x: I don\'t have permissions to edit this role, please check the role order!');
+		if(msg.member.highestRole.comparePositionTo(role) < 1)
+			return msg.channel.send(":x: Your highest role is lower than this role, so you cannot assign it!")
+
 			msg.guild.members.get(user.id).addRole(role).then(m => {
 				if(m.roles.has(role.id))
 					msg.channel.send("Successfully added role *" + roleToGive + "* to " + user + ".");
 				else
 					msg.channel.send("Failed to add role *" + roleToGive + "* to " + user + ".");
 			}).catch(console.error);
-		} else
-			msg.channel.send(":x: Your highest role is lower than this role, so you cannot assign it!")
 	}
 };
