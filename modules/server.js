@@ -6,6 +6,15 @@ module.exports = {
 	help: 'Provides information about the server.',
 	main: function(bot, msg) {
 		const Discord = require('discord.js');
+		var members = 0, bots = 0
+
+		msg.guild.members.forEach(member => {
+			if(member.user.bot)
+				bots++;
+			else
+				members++;
+		});
+
 		const embed = new Discord.RichEmbed()
 			.setTitle(msg.guild.name)
 			.setColor(0x1675DB)
@@ -18,13 +27,17 @@ module.exports = {
 			.addField('Owner', msg.guild.owner.user.username, true)
 			.addField('Default Channel', msg.guild.defaultChannel, true)
 			.addField('Region', msg.guild.region, true)
-			.addField('Member Count', msg.guild.members.size, true)
+			.addField('Total Members', msg.guild.members.size, true)
+			.addField('User Count', members, true)
+			.addField('Bot Count', bots, true)
 			.addField('Channel Count', msg.guild.channels.size, true)
 			.addField('Roles', msg.guild.roles.size, true)
 
 			if(msg.guild.features) {
 				embed.addField('Features', msg.guild.features.join('\n'))
 					.setDescription('<:partner:314068430556758017> Partnered Server <:partner:314068430556758017>')
+				if(msg.guild.features.includes('INVITE_SPLASH'))
+					embed.setImage(msg.guild.splashURL)
 			} else {
 				embed.setDescription('Server Information')
 			}
