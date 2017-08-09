@@ -37,7 +37,7 @@ module.exports = {
 				embed.addField('Features', msg.guild.features.join('\n'))
 					.setDescription('<:partner:314068430556758017> Partnered Server <:partner:314068430556758017>')
 				if(msg.guild.features.includes('INVITE_SPLASH'))
-					embed.setImage(msg.guild.splashURL)
+					embed.setImage(msg.guild.splashURL + "?size=2048")
 			} else {
 				embed.setDescription('Server Information')
 			}
