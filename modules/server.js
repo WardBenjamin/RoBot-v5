@@ -9,7 +9,6 @@ module.exports = {
 		const embed = new Discord.RichEmbed()
 			.setTitle(msg.guild.name)
 			.setColor(0x1675DB)
-			.setDescription('Server Information')
 			.setFooter('Triggered by ' + msg.author.username, msg.author.avatarURL)
 			.setThumbnail(msg.guild.iconURL)
 			.setTimestamp()
@@ -22,6 +21,13 @@ module.exports = {
 			.addField('Member Count', msg.guild.members.size, true)
 			.addField('Channel Count', msg.guild.channels.size, true)
 			.addField('Roles', msg.guild.roles.size, true)
+
+			if(msg.guild.features) {
+				embed.addField('Features', msg.guild.features.join('\n'))
+					.setDescription('<:partner:314068430556758017> Partnered Server <:partner:314068430556758017>')
+			} else {
+				embed.setDescription('Server Information')
+			}
 		msg.channel.send({embed:embed});
 	}
 };
