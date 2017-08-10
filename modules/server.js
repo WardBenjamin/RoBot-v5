@@ -10,9 +10,9 @@ module.exports = {
 
 		msg.guild.members.forEach(member => {
 			if(member.user.bot)
-				bots++;
+				bots = bots + 1;
 			else
-				members++;
+				members = members + 1;
 		});
 
 		const embed = new Discord.RichEmbed()
@@ -33,7 +33,7 @@ module.exports = {
 			.addField('Channel Count', msg.guild.channels.size, true)
 			.addField('Roles', msg.guild.roles.size, true)
 
-			if(msg.guild.features) {
+			if(msg.guild.features[0]) {
 				embed.addField('Features', msg.guild.features.join('\n'))
 					.setDescription('<:partner:314068430556758017> Partnered Server <:partner:314068430556758017>')
 				if(msg.guild.features.includes('INVITE_SPLASH'))
