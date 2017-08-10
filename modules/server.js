@@ -22,7 +22,7 @@ module.exports = {
 			.setThumbnail(msg.guild.iconURL)
 			.setTimestamp()
 			.addField('Name', msg.guild.name, true)
-			.addField('Created', msg.guild.createdAt.toLocaleString())
+			.addField('Created', msg.guild.createdAt.toLocaleString(), true)
 			.addField('ID', msg.guild.id, true)
 			.addField('Owner', msg.guild.owner.user.username, true)
 			.addField('Default Channel', msg.guild.defaultChannel, true)
