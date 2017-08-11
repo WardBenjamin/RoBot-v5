@@ -10,22 +10,31 @@ var afkJson = fs.readFileSync("./afk.json"),
 module.exports = (bot) => {
 	//Work on making this send real guild size
 	bot.sendServerCount = function () {
+		var guilds;
+		if(bot.shard) {
+			bot.shard.fetchClientValues('guilds.size').then(g => {
+				guilds = g.reduce((prev, val) => prev + val, 0)
+			}).catch(console.error);
+		} else {
+			guilds = bot.guilds.size;
+		}
+		
 		unirest.post("https://bots.discordlist.net/api")
-			.send({ "token": config.dlist, "servers": bot.guilds.size })
+			.send({ "token": config.dlist, "servers": guilds })
 			.end(function (response) {
 				bot.log(response.body);
 			});
 
 		unirest.post("https://bots.discord.pw/api/bots/" + bot.user.id + "/stats")
 			.headers({ 'Authorization': config.dbotspw, 'Content-Type': 'application/json' })
-			.send({ "server_count": bot.guilds.size })
+			.send({ "server_count": guilds })
 			.end(function (response) {
 				bot.log(response.body);
 			});
 
 		unirest.post("https://discordbots.org/api/bots/" + bot.user.id + "/stats")
 			.headers({ 'Authorization': config.dbotsorg, 'Content-Type': 'application/json' })
-			.send({ "server_count": bot.guilds.size })
+			.send({ "server_count": guilds })
 			.end(function (response) {
 				bot.log(response.body);
 			});
