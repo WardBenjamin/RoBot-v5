@@ -48,7 +48,7 @@ module.exports = {
                 var website = b[0].Website || "None";
                 teaminfo.setAuthor('FIRST® Tech Challenge Team ' + num, 'https://cdn.discordapp.com/icons/342152047753166859/4e48a7a9122137223d11090ba0792d39.jpg', 'https://www.theorangealliance.com/team/' + num)
                     .setColor(0xff9800)
-                    .addField('Name', b[0].TeamNameShort, true)
+                    .addField('Name', b[0].TeamNameShort + " (" + b[0].TeamNameLong + ")", true)
                     .addField('Rookie Year', b[0].RookieYear, true)
                     .addField('Location', b[0].City + ", " + b[0].StateProv + ", " + b[0].Country, true)
                     .addField('Website', website, true)
