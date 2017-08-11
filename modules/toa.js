@@ -52,6 +52,7 @@ module.exports = {
                     .addField('Rookie Year', b[0].RookieYear, true)
                     .addField('Location', b[0].City + ", " + b[0].StateProv + ", " + b[0].Country, true)
                     .addField('Website', website, true)
+                    .addField('FTCRoot Page', "http://www.ftcroot.com/teams/" + num, true);
                 sendEmbed(teaminfo)
             })
         }
