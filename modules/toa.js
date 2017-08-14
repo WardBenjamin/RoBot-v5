@@ -18,12 +18,36 @@ module.exports = {
         } else if (!isNaN(teamNumber)) {
             if (args === "team") {
                 team(teamNumber)
+            } else if(args === "awards") {
+                var year = m.content.split(" ")[2];
+                if(isNaN(year))
+                    year = curYear
+                    
+                awards = new Discord.RichEmbed();
             } else {
                 m.channel.send("Please specify an argument! Accepted arguments: team");
             }
         }
 
+        function team(num) {
+            var teaminfo = new Discord.RichEmbed();
+            req("team/" + num).then(b => {
+                if (!b[0]) return m.channel.send("This team does not have any data on it, or it does not exist!")
+                var website = b[0].Website || "None";
+                teaminfo.setAuthor('FIRST® Tech Challenge Team ' + num, 'https://cdn.discordapp.com/icons/342152047753166859/4e48a7a9122137223d11090ba0792d39.jpg', 'https://www.theorangealliance.com/team/' + num)
+                    .setColor(0xff9800)
+                    .addField('Name', b[0].TeamNameShort + "\n(" + b[0].TeamNameLong + ")", true)
+                    .addField('Rookie Year', b[0].RookieYear, true)
+                    .addField('Location', b[0].City + ", " + b[0].StateProv + ", " + b[0].Country, true)
+                    .addField('Website', website, true)
+                    .addField('FTCRoot Page', "http://www.ftcroot.com/teams/" + num, true)
+                sendEmbed(teaminfo)
+            })
+        }
+
         function sendEmbed(embed) {
+            embed.setFooter('Powered by The Orange Alliance')
+            .setTimestamp()
             m.channel.send({ embed: embed })
                 .then(msg => {
                     if (!m.content.endsWith('--nodel')) {
@@ -39,22 +63,6 @@ module.exports = {
                             })
                     }
                 })
-        }
-
-        function team(num) {
-            var teaminfo = new Discord.RichEmbed();
-            req("team/" + num).then(b => {
-                if (!b[0]) return m.channel.send("This team does not have any data on it, or it does not exist!")
-                var website = b[0].Website || "None";
-                teaminfo.setAuthor('FIRST® Tech Challenge Team ' + num, 'https://cdn.discordapp.com/icons/342152047753166859/4e48a7a9122137223d11090ba0792d39.jpg', 'https://www.theorangealliance.com/team/' + num)
-                    .setColor(0xff9800)
-                    .addField('Name', b[0].TeamNameLong + "\n(" + b[0].TeamNameShort + ")", true)
-                    .addField('Rookie Year', b[0].RookieYear, true)
-                    .addField('Location', b[0].City + ", " + b[0].StateProv + ", " + b[0].Country, true)
-                    .addField('Website', website, true)
-                    .addField('FTCRoot Page', "http://www.ftcroot.com/teams/" + num, true);
-                sendEmbed(teaminfo)
-            })
         }
 
         function req(endpoint) {

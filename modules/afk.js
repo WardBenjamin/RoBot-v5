@@ -3,19 +3,19 @@ var fs = require("fs"),
     afk = JSON.parse(afkJson);
 
 module.exports = {
-	name: 'afk',
+    name: 'afk',
     type: 'fun',
-	usage: 'afk <reason>',
-	permission: 1,
-	help: 'Sets your afk status.',
-	main: function(bot, msg) {
+    usage: 'afk <reason>',
+    permission: 1,
+    help: 'Sets your afk status.',
+    main: function (bot, msg) {
         var afkJson = fs.readFileSync("./afk.json"),
-        afk = JSON.parse(afkJson);
-		let mentions = msg.mentions;
-		if (mentions.everyone)
-			return msg.channel.send("You're not allowed to mention everyone with this command!");
+            afk = JSON.parse(afkJson);
+        let mentions = msg.mentions;
+        if (mentions.everyone)
+            return msg.channel.send("You're not allowed to mention everyone with this command!");
         bot.getPrefix(msg).then(prefix => {
-            if(msg.content == prefix + "afk")
+            if (msg.content == prefix + "afk")
                 var reason = "Not Specified"
             else
                 var reason = msg.content.replace('@everyone', '@nope').replace('@here', '@nope');
@@ -27,8 +27,12 @@ module.exports = {
                 "id": msg.author.id,
                 "reason": reason
             });
-            fs.writeFileSync("./afk.json", JSON.stringify(afk, null, 3));
-            msg.channel.send(":robot: **" + msg.member.displayName + "** is AFK: **" + reason + "**");
+            msg.channel.send(":ok_hand: I will set your status as AFK in 20 seconds for the following reason: **" + reason + "**").then(msg => {
+                setTimeout(function () {
+                    fs.writeFileSync("./afk.json", JSON.stringify(afk, null, 3));
+                    msg.edit(":robot: **" + msg.member.displayName + "** is AFK: **" + reason + "**");
+                }, 20000)
+            })
         })
-	}
+    }
 };
