@@ -27,10 +27,10 @@ module.exports = {
                 "id": msg.author.id,
                 "reason": reason
             });
-            msg.channel.send(":ok_hand: I will set your status as AFK in 20 seconds for the following reason: **" + reason + "**").then(msg => {
+            msg.channel.send(":ok_hand: I will set your status as AFK in 20 seconds for the following reason: **" + reason + "**").then(e => {
                 setTimeout(function () {
                     fs.writeFileSync("./afk.json", JSON.stringify(afk, null, 3));
-                    msg.edit(":robot: **" + msg.member.displayName + "** is AFK: **" + reason + "**");
+                    e.edit(":robot: **" + msg.member.displayName + "** is AFK: **" + reason + "**");
                 }, 20000)
             })
         })
