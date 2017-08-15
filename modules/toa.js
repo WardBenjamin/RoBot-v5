@@ -68,7 +68,7 @@ module.exports = {
         function req(endpoint) {
             return new Promise(
                 function (resolve, reject) {
-                    unirest.get("http://dev.theyellowalliance.com/api/" + endpoint)
+                    unirest.get("http://beta.theorangealliance.org/api/" + endpoint)
                         .headers({ 'X-Application-Origin': bot.user.username, 'X-TOA-Key': bot.config.toa })
                         .end(function (response) {
                             resolve(response.body);
